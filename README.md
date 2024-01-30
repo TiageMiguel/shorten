@@ -1,6 +1,6 @@
 # Shorten - URL Shortener
 
-![shorten banner](https://raw.githubusercontent.com/TiageMiguel/Shorten/master/.github/assets/banner.jpg)
+![shorten banner](https://github.com/TiageMiguel/Shorten/blob/main/.github/assets/banner.jpg?raw=true)
 
 Shorten is a URL shortener project built with Svelte and Elysia, powered by Bun for efficient URL shortening and redirection.
 
