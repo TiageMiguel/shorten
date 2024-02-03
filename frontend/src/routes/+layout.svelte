@@ -1,9 +1,9 @@
 <script>
 	import '../app.pcss';
-	import Header from '../components/header.svelte';
+	import Header from '../components/page/header.svelte';
 </script>
 
-<main class="bg-custom-gradient flex h-screen flex-col">
+<main class="flex min-h-screen flex-col bg-white">
 	<Header />
 	<slot />
 </main>

@@ -10,15 +10,9 @@ datasource db {
   url      = "file:dev.db"
 }
 
-model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
-}
-
 model ShorterLink {
   id        String   @id
-  link      String
+  url       String
   updatedAt DateTime @updatedAt
   createdAt DateTime @default(now())
 }

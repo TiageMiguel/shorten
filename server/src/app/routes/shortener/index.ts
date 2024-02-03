@@ -6,27 +6,39 @@ import { nanoid } from "nanoid";
 
 const db = new PrismaClient();
 
-interface ContextParams {
+async function GET_ALL() {
+  try {
+    const results = await db.shorterLink.findMany();
+
+    return {
+      ...results,
+    };
+  } catch (error) {
+    return {
+      status: "Error",
+    };
+  }
+}
+
+interface GetContextParams {
   params: {
     slug: string;
   };
 }
 
-async function GET(context: Context<ContextParams>) {
+async function GET(context: Context<GetContextParams>) {
   const { params } = context;
 
   if (
     typeof params.slug === undefined ||
     params.slug === null ||
     params.slug.length === 0 ||
-    params.slug.length <= 7
+    params.slug.length < 7
   ) {
     return {
-      status: "errorsadasdsa",
+      error: "The provided slug is not valid!",
     };
   }
-
-  console.log(params.slug);
 
   try {
     const result = await db.shorterLink.findUnique({
@@ -36,7 +48,7 @@ async function GET(context: Context<ContextParams>) {
     });
 
     return {
-      result,
+      ...result,
     };
   } catch (error) {
     return {
@@ -46,34 +58,98 @@ async function GET(context: Context<ContextParams>) {
   }
 }
 
-async function POST(context: Context) {
+interface PostContextParams {
+  body: {
+    url: string;
+  };
+}
+
+async function POST(context: Context<PostContextParams>) {
+  const body = await JSON.parse(context.body);
+
   let id = nanoid(7);
 
   const x = await db.shorterLink.create({
     data: {
       id: String(id),
-      link: context.body.url,
+      url: body.url,
     },
   });
 
-  console.log(x);
-
   return {
-    status: "POST",
     id,
-    link: context.body.url,
+    url: body.url,
   };
 }
 
-async function PUT(context: Context) {
+interface PutContextParams {
+  body: {
+    id: string;
+    url: string;
+  };
+}
+
+async function PUT(context: Context<PutContextParams>) {
+  const { id, url } = await JSON.parse(context.body);
+
+  try {
+    const updated = await db.shorterLink.update({
+      where: {
+        id,
+      },
+      data: {
+        url,
+      },
+    });
+
+    return {
+      ...updated,
+    };
+  } catch (error) {
+    return {
+      status: "Error",
+    };
+  }
+
   return {
     status: "PUT",
   };
 }
 
-async function DELETE(context: Context) {}
+interface DeleteContextParams {
+  body: {
+    id: string;
+  };
+}
+
+async function DELETE(context: Context<DeleteContextParams>) {
+  const { id } = await JSON.parse(context.body);
+
+  if (id === null) {
+    return {
+      error: "A Slug needs to be provided!",
+    };
+  }
+
+  try {
+    const deleted = db.shorterLink.delete({
+      where: {
+        id,
+      },
+    });
+
+    return {
+      deleted: true,
+    };
+  } catch (error) {
+    return {
+      status: "Error",
+    };
+  }
+}
 
 export const shortenerRoutes = new Elysia({ prefix: "/shortener" })
+  .get("/all", GET_ALL)
   .get("/:slug", GET)
   .post("/", POST)
   .put("/", PUT)

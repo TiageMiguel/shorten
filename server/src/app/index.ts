@@ -6,5 +6,5 @@ import { routes } from "./routes";
 
 export const app = new Elysia()
   .use(swagger())
-  .use(cors({ origin: true }))
+  .use(cors({ origin: true, methods: "*" }))
   .use(routes);
