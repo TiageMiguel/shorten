@@ -1,4 +1,4 @@
-import { Context, Elysia } from "elysia";
+import { Context, Elysia, t } from "elysia";
 
 import { PrismaClient } from "@prisma/client";
 
@@ -150,7 +150,24 @@ async function DELETE(context: Context<DeleteContextParams>) {
 
 export const shortenerRoutes = new Elysia({ prefix: "/shortener" })
   .get("/all", GET_ALL)
-  .get("/:slug", GET)
-  .post("/", POST)
-  .put("/", PUT)
-  .delete("/", DELETE);
+  .get("/:slug", GET, {
+    params: t.Object({
+      slug: t.String(),
+    }),
+  })
+  .post("/", POST, {
+    body: t.Object({
+      url: t.String(),
+    }),
+  })
+  .put("/", PUT, {
+    body: t.Object({
+      id: t.String(),
+      url: t.String(),
+    }),
+  })
+  .delete("/", DELETE, {
+    body: t.Object({
+      id: t.String(),
+    }),
+  });
